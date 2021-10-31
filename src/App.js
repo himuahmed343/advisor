@@ -1,23 +1,42 @@
-import logo from './logo.svg';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import './App.css';
+import ReactLoading from 'react-loading';
+
 
 function App() {
+
+  const [advice, setAdvice] = useState("")
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const fetchAdvice = () => {
+    setLoading(true)
+    axios.get('	https://api.adviceslip.com/advice')
+      .then((response) => {
+        const { advice } = response.data.slip;
+        setAdvice(advice)
+        setLoading(false)
+
+    })
+      .catch((err) => {
+        setLoading(false);
+        setError(true);
+    })
+
+  }
+  useEffect(() => {
+    fetchAdvice()
+  }, [])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="main">
+      <div className="text-box">
+
+        <h1 className="text">{advice}</h1>
+        {!loading && advice.length === 0 && <div>No data found, Bro!</div>}
+        {error && <div>There was an error!</div>}
+        {loading && <h5>Loading...</h5>}
+      </div>
     </div>
   );
 }
